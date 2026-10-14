@@ -1,0 +1,3 @@
+In this course project, you will develop a file-sharing system using client-server architecture and socket programming. Please use the provided sign-up sheet to form a team of three students. You must sign up for a team by the end of this Friday.
+
+Each team is required to use a GitHub code repository to manage and develop the project. All team members should contribute to the project through their own GitHub accounts. At the end of the project, your team will be required to submit the GitHub commit history/log, which will be used to evaluate each member’s individual contribution.
