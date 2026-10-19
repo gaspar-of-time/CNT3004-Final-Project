@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import socket
 
@@ -25,10 +26,8 @@ def main():
         data = input("> ")
         data = data.split(" ")
         cmd = data[0]
-
-        if cmd == "HELP":
-            client.send(cmd.encode(FORMAT))
-        elif cmd == "LOGOUT":
+        client.send(cmd.encode(FORMAT))
+        if cmd == "LOGOUT":
             client.send(cmd.encode(FORMAT))
             break
 

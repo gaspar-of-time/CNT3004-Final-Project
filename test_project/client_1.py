@@ -1,3 +1,4 @@
+
 import os
 import socket
 
@@ -5,7 +6,7 @@ import socket
 # IP = "192.168.1.101" #"localhost"
 IP = "localhost"
 PORT = 4450
-ADDR = (IP, PORT)
+ADDR = (IP,PORT)
 SIZE = 1024  # byte .. buffer size
 FORMAT = "utf-8"
 SERVER_DATA_PATH = "server_data"
@@ -27,11 +28,9 @@ def main():
         data = input("> ")
         data = data.split(" ")
         cmd = data[0]
+        client.send(cmd.encode(FORMAT))
 
-        if cmd == "TASK":
-            client.send(cmd.encode(FORMAT))
-
-        elif cmd == "LOGOUT":
+        if cmd == "LOGOUT":
             client.send(cmd.encode(FORMAT))
             break
 
