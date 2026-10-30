@@ -1,5 +1,6 @@
 import os
 import socket
+from pathlib import Path
 
 
 # IP = "192.168.1.101" #"localhost"
@@ -14,8 +15,16 @@ def main():
 
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect(ADDR)
-    f = open("./recv/test.txt", "wb")
-    f.write(client.recv(SIZE))
+    if (os.path.exists("./recv/test.txt")):
+        response = input("File exists, do you want to overwrite? Y/N:")
+        if (response == "Y" or "y" or "yes" or "YES" or "Yes"):
+            f = open("./recv/test.txt", "wb")
+            f.write(b'')
+            f = open("./recv/test.txt", "ab")
+            test = True
+            while (test != b''):
+                test = client.recv(SIZE)
+                f.write(test)
 
 
 

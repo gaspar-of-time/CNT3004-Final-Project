@@ -13,11 +13,8 @@ SERVER_PATH = "server"
 def handle_client (conn,addr):
 
     print(f"[NEW CONNECTION] {addr} connected.")
-    f = open( "in.txt" , "rb", buffering=0)
-    conn.send(f.read())
-    f = open( "in.txt" , "rb", buffering=0)
-    print(f.read())
-
+    f = open( "./send/test.txt" , "rb", buffering=0)
+    conn.sendfile(f)
     print(f"{addr} disconnected")
     conn.close()
 
