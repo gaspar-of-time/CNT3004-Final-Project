@@ -14,6 +14,7 @@ def handle_client (conn,addr):
 
     print(f"[NEW CONNECTION] {addr} connected.")
     f = open( "./send/test.txt" , "rb", buffering=0)
+    print(f"file is {f.readable}")
     conn.sendfile(f)
     print(f"{addr} disconnected")
     conn.close()
