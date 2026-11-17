@@ -96,7 +96,7 @@ def handle_client(conn, addr):
                 # expected msg from client is DIRECTORY@ [path]
                 if (os.path.exists(path)):
                     directory = os.scandir(path)
-                    send_data = "Files in directory " + path + ":\n"
+                    # send_data = "Files in directory " + path + ":\n"
                     for entry in directory:
                         if entry.is_dir():
                             send_data += "[Directory] " + entry.name + "\n"
