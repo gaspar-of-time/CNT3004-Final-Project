@@ -73,7 +73,7 @@ def handle_client(conn, addr):
             case "DELETE":
                 # expected msg from client is DELETE@ [server filepath]
                 path = data[1]
-                if (not os.path.exists(path)):
+                if (os.path.exists(path)):
                     os.remove(path)
                     send_data = "DONE@"
                     conn.send(send_data.encode(FORMAT))
