@@ -2,6 +2,7 @@ import sys
 from PySide6 import QtCore, QtWidgets, QtGui
 import socket
 import os
+import hashlib
 
 HostName = socket.gethostname();
 IP = socket.gethostbyname(HostName)
@@ -38,6 +39,8 @@ class MainWidget(QtWidgets.QWidget):
         Self.KillButton = QtWidgets.QPushButton("Delete File at Path");
         Self.DownloadButton = QtWidgets.QPushButton("Download File at Path");
         Self.ServerContentButton = QtWidgets.QPushButton("View Content.");
+        Self.PasswordPrompt = QtWidgets.QLabel("Password : ");
+        Self.PasswordInput = QtWidgets.QLineEdit();
 
         Self.PrintButton.clicked.connect(Self.Print)
         Self.QuitButton.clicked.connect(Self.Quit);
@@ -72,6 +75,9 @@ class MainWidget(QtWidgets.QWidget):
 
         PortSection = QtWidgets
         
+        PasswordSection = MakeSection(Self.PasswordPrompt, Self.PasswordInput);
+        Container.Layout.addWidget(PasswordSection);
+
         Buttons = MakeSection(Self.SendButton, Self.DownloadButton, Self.KillButton);
         Container.Layout.addWidget(Buttons);
         Self.Layout.addWidget(Container);
@@ -86,6 +92,7 @@ class MainWidget(QtWidgets.QWidget):
         Self.Socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
         Self.Socket.settimeout(5);
         Self.Socket.connect((IP, int(Port)));
+        Self.Socket.send(hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest().encode());
 
     def Send(Self):
         #IP = Self.IP.text();
@@ -136,10 +143,10 @@ class MainWidget(QtWidgets.QWidget):
         FileName = Self.ServerFileName.text();
         
         if FileName == "":
-            NewFileName = Self.File;
-        
-        NewFileName = FileName.split("/")[-1];
-        #print(NewFileName, Self.File);
+            NewFileName = Self.File.split("/")[-1];
+        else: 
+            NewFileName = FileName.split("/")[-1];
+        print("New : ", NewFileName, "Oth : ", Self.File);
         
         Paths = FileName.split("/");
         EndOfPaths = len(Paths);
@@ -170,7 +177,7 @@ class MainWidget(QtWidgets.QWidget):
             #print(Dirs);
             Read = Self.ReadDir(Dirs);
             #print(Read);
-            print(FullPath);
+            #print(FullPath);
         print(FullPath + NewFileName);
         Self.Socket.send(f"UPLOAD@{FullPath + NewFileName}".encode());
         Response = Self.GetMessage();
@@ -371,5 +378,5 @@ if __name__ == "__main__":
     Widget.show();
     with open("Style.qss", "r") as F:
         Style = F.read();
-        Widget.setStyleSheet(Style);
+        App.setStyleSheet(Style);
     App.exec();
