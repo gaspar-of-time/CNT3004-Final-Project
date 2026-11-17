@@ -3,6 +3,7 @@ import os
 import socket
 import threading
 import fstream
+import shutil
 
 IP = "0.0.0.0"
 PORT = 4450
@@ -117,6 +118,14 @@ def handle_client(conn, addr):
             case "DELDIR":
                 # expected msg from client is DELDIR@ [path]
                 # wip
+                path = data[1]
+                if (os.path.exists(path)):
+                    shutil.rmtree(path, ignore_errors=True)
+                    send_data = "DONE@"
+                    conn.send(send_data.encode(FORMAT))
+                else:
+                    send_data = "FAIL@"
+                    conn.send(send_data.encode(FORMAT))
 
     print(f"{addr} disconnected")
     conn.close()
