@@ -1,0 +1,8 @@
+* {
+	background-color: #212121;
+	color: white;
+}
+
+Container {
+	padding: 2000px
+}
