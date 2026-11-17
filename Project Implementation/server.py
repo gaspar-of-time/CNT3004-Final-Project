@@ -36,7 +36,10 @@ def handle_client(conn, addr):
     while True:
         data = conn.recv(SIZE).decode(FORMAT)
         data = data.split("@")
+        print(data);
         cmd = data[0]
+        if cmd == "":
+            break;
         path = data[1]
         match cmd:
             case "UPLOAD":
@@ -84,28 +87,30 @@ def handle_client(conn, addr):
             case "DOWNLOAD":
                 # expected msg from client is DOWNLOAD@ [server filepath]
 
-                data = conn.recv(SIZE).decode(FORMAT)
-                data = data.split("@")
-                if (data[0] == "RDYRECV"):
-                    f = open(path, "rb", buffering=0)
-                    conn.sendfile(f)
-                    send_data = "DONE@"
-                    conn.send(send_data.encode(FORMAT))
+                # data = conn.recv(SIZE).decode(FORMAT)
+                # data = data.split("@")
+                with open(path, "rb") as File:
+                        Text = File.read(1024);
+                        while Text != b"":              	
+                            conn.send(Text)
+                            Text = File.read(1024);
+                break;
+                #send_data = "DONE@"
+                #conn.send(send_data.encode(FORMAT))
 
             case "DIRECTORY":
                 # expected msg from client is DIRECTORY@ [path]
-                if (os.path.exists(path)):
-                    directory = os.scandir(path)
-                    # send_data = "Files in directory " + path + ":\n"
-                    for entry in directory:
-                        if entry.is_dir():
-                            send_data += "[Directory] " + entry.name + "\n"
-                        elif entry.is_file():
-                            send_data += "[File] " + entry.name + "\n"
-                    conn.send(send_data.encode(FORMAT))
-                else:
-                    send_data = "FAIL@"
-                    conn.send(send_data.encode(FORMAT))
+
+                directory = os.scandir(path)
+                send_data = ""# + path + ":\n"
+                for entry in directory:
+                    if entry.is_dir():
+                        send_data += "[Directory] " + entry.name + "\n"
+                    elif entry.is_file():
+                        send_data += "[File] " + entry.name + "\n"
+                if send_data == "":
+                    send_data = "EMPTY.";
+                conn.send(send_data.encode(FORMAT))
 
             case "MKDIR":
                 # expected msg from client is MKDIR@ [path]
@@ -129,7 +134,7 @@ def handle_client(conn, addr):
                     send_data = "FAIL@"
                     conn.send(send_data.encode(FORMAT))
 
-    print(f"{addr} Connection Terminated")
+    print(f"{addr} disconnected")
     conn.close()
 
 
