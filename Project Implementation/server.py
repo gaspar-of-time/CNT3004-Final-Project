@@ -10,7 +10,6 @@ PORT = 4450
 ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
-SERVER_PATH = "server"
 
 
 def getFile(socket, path):
@@ -38,10 +37,11 @@ def handle_client(conn, addr):
         data = conn.recv(SIZE).decode(FORMAT)
         data = data.split("@")
         cmd = data[0]
+        path = data[1]
         match cmd:
             case "UPLOAD":
                 # expected msg from client is UPLOAD@ [server filepath]
-                path = data[1]
+
                 if (os.path.exists(path)):
                     # if the file exists send that it exists
                     send_data = "EXISTS@"
@@ -72,7 +72,7 @@ def handle_client(conn, addr):
 
             case "DELETE":
                 # expected msg from client is DELETE@ [server filepath]
-                path = data[1]
+
                 if (os.path.exists(path)):
                     os.remove(path)
                     send_data = "DONE@"
@@ -83,7 +83,7 @@ def handle_client(conn, addr):
 
             case "DOWNLOAD":
                 # expected msg from client is DOWNLOAD@ [server filepath]
-                path = data[1]
+
                 data = conn.recv(SIZE).decode(FORMAT)
                 data = data.split("@")
                 if (data[0] == "RDYRECV"):
@@ -94,7 +94,7 @@ def handle_client(conn, addr):
 
             case "DIRECTORY":
                 # expected msg from client is DIRECTORY@ [path]
-                path = data[1]
+
                 directory = os.scandir(path)
                 send_data = "Files in directory " + path + ":\n"
                 for entry in directory:
@@ -106,9 +106,9 @@ def handle_client(conn, addr):
 
             case "MKDIR":
                 # expected msg from client is MKDIR@ [path]
-                path = data[1]
+
                 if (not os.path.exists(path)):
-                    os.mkdir(directory)
+                    os.mkdir(path)
                     send_data = "DONE@"
                     conn.send(send_data.encode(FORMAT))
                 else:
@@ -117,8 +117,7 @@ def handle_client(conn, addr):
 
             case "DELDIR":
                 # expected msg from client is DELDIR@ [path]
-                # wip
-                path = data[1]
+
                 if (os.path.exists(path)):
                     shutil.rmtree(path, ignore_errors=True)
                     send_data = "DONE@"
