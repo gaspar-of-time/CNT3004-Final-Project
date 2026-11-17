@@ -72,10 +72,13 @@ def handle_client(conn, addr):
             case "DELETE":
                 # expected msg from client is DELETE@ [server filepath]
                 path = data[1]
-                if (os.path.exists(path)):
+                if (not os.path.exists(path)):
                     os.remove(path)
-                send_data = "DONE@"
-                conn.send(send_data.encode(FORMAT))
+                    send_data = "DONE@"
+                    conn.send(send_data.encode(FORMAT))
+                else:
+                    send_data = "DNE@"
+                    conn.send(send_data.encode(FORMAT))
 
             case "DOWNLOAD":
                 # expected msg from client is DOWNLOAD@ [server filepath]
@@ -88,6 +91,32 @@ def handle_client(conn, addr):
                     send_data = "DONE@"
                     conn.send(send_data.encode(FORMAT))
 
+            case "DIRECTORY":
+                # expected msg from client is DIRECTORY@ [path]
+                path = data[1]
+                directory = os.scandir(path)
+                send_data = "Files in directory " + path + ":\n"
+                for entry in directory:
+                    if entry.is_dir():
+                        send_data += "[Directory] " + entry.name + "\n"
+                    elif entry.is_file():
+                        send_data += "[File] " + entry.name + "\n"
+                conn.send(send_data.encode(FORMAT))
+
+            case "MKDIR":
+                # expected msg from client is MKDIR@ [path]
+                path = data[1]
+                if (not os.path.exists(path)):
+                    os.mkdir(directory)
+                    send_data = "DONE@"
+                    conn.send(send_data.encode(FORMAT))
+                else:
+                    send_data = "FAIL@"
+                    conn.send(send_data.encode(FORMAT))
+
+            case "DELDIR":
+                # expected msg from client is DELDIR@ [path]
+                # wip
 
     print(f"{addr} disconnected")
     conn.close()
