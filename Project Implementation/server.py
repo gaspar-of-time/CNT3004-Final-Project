@@ -36,10 +36,10 @@ def handle_client(conn, addr):
     while True:
         data = conn.recv(SIZE).decode(FORMAT)
         data = data.split("@")
-        print(data);
+        print(data)
         cmd = data[0]
         if cmd == "":
-            break;
+            break
         path = data[1]
         match cmd:
             case "UPLOAD":
@@ -76,8 +76,12 @@ def handle_client(conn, addr):
             case "DELETE":
                 # expected msg from client is DELETE@ [server filepath]
 
-                if (os.path.exists(path)):
+                if (os.path.isfile(path)):
                     os.remove(path)
+                    send_data = "DONE@"
+                    conn.send(send_data.encode(FORMAT))
+                elif (os.path.isdir(path)):
+                    shutil.rmtree(path, ignore_errors=True)
                     send_data = "DONE@"
                     conn.send(send_data.encode(FORMAT))
                 else:
@@ -90,26 +94,26 @@ def handle_client(conn, addr):
                 # data = conn.recv(SIZE).decode(FORMAT)
                 # data = data.split("@")
                 with open(path, "rb") as File:
-                        Text = File.read(1024);
-                        while Text != b"":              	
-                            conn.send(Text)
-                            Text = File.read(1024);
-                break;
-                #send_data = "DONE@"
-                #conn.send(send_data.encode(FORMAT))
+                    Text = File.read(1024)
+                    while Text != b"":
+                        conn.send(Text)
+                        Text = File.read(1024)
+                break
+                # send_data = "DONE@"
+                # conn.send(send_data.encode(FORMAT))
 
             case "DIRECTORY":
                 # expected msg from client is DIRECTORY@ [path]
 
                 directory = os.scandir(path)
-                send_data = ""# + path + ":\n"
+                send_data = ""  # + path + ":\n"
                 for entry in directory:
                     if entry.is_dir():
                         send_data += "[Directory] " + entry.name + "\n"
                     elif entry.is_file():
                         send_data += "[File] " + entry.name + "\n"
                 if send_data == "":
-                    send_data = "EMPTY.";
+                    send_data = "EMPTY."
                 conn.send(send_data.encode(FORMAT))
 
             case "MKDIR":
@@ -117,17 +121,6 @@ def handle_client(conn, addr):
 
                 if (not os.path.exists(path)):
                     os.mkdir(path)
-                    send_data = "DONE@"
-                    conn.send(send_data.encode(FORMAT))
-                else:
-                    send_data = "FAIL@"
-                    conn.send(send_data.encode(FORMAT))
-
-            case "DELDIR":
-                # expected msg from client is DELDIR@ [path]
-
-                if (os.path.exists(path)):
-                    shutil.rmtree(path, ignore_errors=True)
                     send_data = "DONE@"
                     conn.send(send_data.encode(FORMAT))
                 else:
