@@ -94,15 +94,18 @@ def handle_client(conn, addr):
 
             case "DIRECTORY":
                 # expected msg from client is DIRECTORY@ [path]
-
-                directory = os.scandir(path)
-                send_data = "Files in directory " + path + ":\n"
-                for entry in directory:
-                    if entry.is_dir():
-                        send_data += "[Directory] " + entry.name + "\n"
-                    elif entry.is_file():
-                        send_data += "[File] " + entry.name + "\n"
-                conn.send(send_data.encode(FORMAT))
+                if (os.path.exists(path)):
+                    directory = os.scandir(path)
+                    send_data = "Files in directory " + path + ":\n"
+                    for entry in directory:
+                        if entry.is_dir():
+                            send_data += "[Directory] " + entry.name + "\n"
+                        elif entry.is_file():
+                            send_data += "[File] " + entry.name + "\n"
+                    conn.send(send_data.encode(FORMAT))
+                else:
+                    send_data = "FAIL@"
+                    conn.send(send_data.encode(FORMAT))
 
             case "MKDIR":
                 # expected msg from client is MKDIR@ [path]
@@ -126,7 +129,7 @@ def handle_client(conn, addr):
                     send_data = "FAIL@"
                     conn.send(send_data.encode(FORMAT))
 
-    print(f"{addr} disconnected")
+    print(f"{addr} Connection Terminated")
     conn.close()
 
 
