@@ -255,7 +255,7 @@ class MainWidget(QtWidgets.QWidget):
         Self.Socket.send(f"DELETE@./Files/{FileToKill}".encode());
         Response = Self.GetMessage();
         Self.Popup(Response);
-        Self.Socket.Close();
+        Self.Socket.close();
 
     def Download(Self):
         try:
@@ -381,7 +381,7 @@ if __name__ == "__main__":
     Widget = MainWidget();
     Widget.resize(200, 200);
     Widget.show();
-    if "--SystemDefaultTheming" not in Args:
+    if ("--SystemDefaultTheming" not in Args) and (os.path.exists("./Style.qss")):
         with open("Style.qss", "r") as F:
             Style = F.read();
             App.setStyleSheet(Style);
