@@ -1,8 +1,23 @@
 * {
-	background-color: #212121;
+	background-color: #181818;
 	color: white;
 }
 
-Container {
-	padding: 2000px
+QPushButton {
+	border-radius: 2px;
+	padding: 5px;
+	background-color: #313131;
+}
+
+QPushButton:hover {
+	background-color: #414141;
+}
+
+QPushButton:pressed {
+	background-color: #252525;
+}
+
+.Section {
+	padding: none;
+	margin: none;
 }
