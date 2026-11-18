@@ -10,11 +10,13 @@ IP = socket.gethostbyname(HostName)
 print(HostName, IP);
 
 def MakeSection(*Args):
-    Out = QtWidgets.QWidget();
-    Out.Layout = QtWidgets.QHBoxLayout(Out);
+    Section = QtWidgets.QWidget();
+    Section.Layout = QtWidgets.QHBoxLayout(Section);
     for Arg in Args:
-        Out.Layout.addWidget(Arg);
-    return Out;
+        Section.Layout.addWidget(Arg);
+    Section.setProperty("class", "Section");
+    Section.Layout.setContentsMargins(0, 0, 0, 0);
+    return Section;
 
 def GetRateMBps(Bytes, TimeNS):
     MegaBytes = Bytes/1000000;
