@@ -265,7 +265,7 @@ class MainWidget(QtWidgets.QWidget):
         # open module socket
         Self.connectModule()
         # send speed info to module
-        Self.ModSocket.send((str(GetRateMBps(SizeBytes, EndTime-StartTime))+"@0@"+str((EndTime-StartTime)/1000000000)+"@"+NewFileName).encode())
+        Self.ModSocket.send((str(GetRateMBps(SizeBytes, EndTime-StartTime))+"@"+str((EndTime-StartTime)/1000000000)+"@"+NewFileName).encode())
 
         # Close socket.
         Self.Socket.close();

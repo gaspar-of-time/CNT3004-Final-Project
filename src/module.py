@@ -22,7 +22,7 @@ def handle_client(conn, addr, starttime):
         if (data[0] == ""):
             break
         with open("./Logs/"+starttime, 'a') as log:
-            log.write("Current Time:"+str(datetime.datetime.now())+", IP Address:"+str(addr)+", File Upload Speed (MB/s):"+data[0]+", File Download Speed (MB/s):"+data[1]+", Time spent on file (s):"+data[2]+", File Name:"+data[3]+"\n")
+            log.write("Current Time:"+str(datetime.datetime.now())+", IP Address:"+str(addr)+", Transfer Speed (MB/s):"+data[0]+", Time spent on file (s):"+data[1]+", File Name:"+data[2]+"\n")
             log.close()
 
 
