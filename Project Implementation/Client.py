@@ -313,7 +313,7 @@ class MainWidget(QtWidgets.QWidget):
             with open(TempLoc, "x") as File:
                 print("Temp file created.");
         Response = Self.Socket.recv(1024);
-        Pos += 1024;
+        Pos += len(Response);
 
         Type = "wb"
         if TempFile:
@@ -322,7 +322,8 @@ class MainWidget(QtWidgets.QWidget):
             while Response != b"":
                 File.write(Response);
                 Response = Self.Socket.recv(1024);
-                Pos += 1024;
+                #print(len(Response));
+                Pos += len(Response);
         Self.Socket.close()
         if EndSize > Pos:
             Self.Popup("File NOT successfully downloaded.");
