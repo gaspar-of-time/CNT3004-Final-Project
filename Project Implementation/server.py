@@ -37,6 +37,8 @@ def handle_client(conn, addr):
     authn = conn.recv(SIZE).decode(FORMAT)
     if (authn not in sha256keys):
         print(f"[AUTHENTICATION FAILED] {addr}")
+        send_data = "FAIL@"
+        conn.send(send_data.encode(FORMAT))
     else:
         while True:
             data = conn.recv(SIZE).decode(FORMAT)
