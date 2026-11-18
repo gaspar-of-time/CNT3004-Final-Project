@@ -1,8 +1,7 @@
 import sys
 from PySide6 import QtCore, QtWidgets, QtGui
-import os
-import hashlib
 import socket
+import os
 
 HostName = socket.gethostname();
 IP = socket.gethostbyname(HostName)
@@ -39,8 +38,6 @@ class MainWidget(QtWidgets.QWidget):
         Self.KillButton = QtWidgets.QPushButton("Delete File at Path");
         Self.DownloadButton = QtWidgets.QPushButton("Download File at Path");
         Self.ServerContentButton = QtWidgets.QPushButton("View Content.");
-        Self.PasswordPrompt = QtWidgets.QLabel("Password : ");
-        Self.PasswordInput = QtWidgets.QLineEdit();
 
         Self.PrintButton.clicked.connect(Self.Print)
         Self.QuitButton.clicked.connect(Self.Quit);
@@ -75,9 +72,6 @@ class MainWidget(QtWidgets.QWidget):
 
         PortSection = QtWidgets
         
-        PasswordSection = MakeSection(Self.PasswordPrompt, Self.PasswordInput);
-        Container.Layout.addWidget(PasswordSection);
-
         Buttons = MakeSection(Self.SendButton, Self.DownloadButton, Self.KillButton);
         Container.Layout.addWidget(Buttons);
         Self.Layout.addWidget(Container);
@@ -92,7 +86,6 @@ class MainWidget(QtWidgets.QWidget):
         Self.Socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
         Self.Socket.settimeout(5);
         Self.Socket.connect((IP, int(Port)));
-        Self.Socket.send(hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest().encode()+"@".encode());
 
     def Send(Self):
         #IP = Self.IP.text();
@@ -167,19 +160,19 @@ class MainWidget(QtWidgets.QWidget):
                         break;
             FullPath = (FullPath + Path + "/").strip();
             if not DirExists:
-                    Self.Socket.send(f"{hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest()}@MKDIR@{FullPath}".encode());
+                    Self.Socket.send(f"MKDIR@{FullPath}".encode());
                     Response = Self.GetMessage();
                     #print(Response);
                     if Response == "FAIL":
                         raise(Exception("Failed to create directory."));
-            Self.Socket.send(f"{hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest()}@DIRECTORY@{FullPath}".encode());
+            Self.Socket.send(f"DIRECTORY@{FullPath}".encode());
             Dirs = Self.GetMessage();
             #print(Dirs);
             Read = Self.ReadDir(Dirs);
             #print(Read);
             #print(FullPath);
         print(FullPath + NewFileName);
-        Self.Socket.send(f"{hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest()}@UPLOAD@{FullPath + NewFileName}".encode());
+        Self.Socket.send(f"UPLOAD@{FullPath + NewFileName}".encode());
         Response = Self.GetMessage();
         #print(Response);
         if Response == "EXISTS":
@@ -252,7 +245,7 @@ class MainWidget(QtWidgets.QWidget):
         Self.Socket.send(f"DELETE@./Files/{FileToKill}".encode());
         Response = Self.GetMessage();
         Self.Popup(Response);
-        Self.Socket.close();
+        Self.Socket.Close();
 
     def Download(Self):
         try:
@@ -378,5 +371,5 @@ if __name__ == "__main__":
     Widget.show();
     with open("Style.qss", "r") as F:
         Style = F.read();
-        App.setStyleSheet(Style);
+        Widget.setStyleSheet(Style);
     App.exec();
