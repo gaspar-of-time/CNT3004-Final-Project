@@ -206,6 +206,8 @@ class MainWidget(QtWidgets.QWidget):
                 print("Not overwriting.");
                 Self.Socket.close();
                 return;
+        elif Response == "FAIL":
+            raise(Exception("Selected server location is directory."))
         #print(Response);
         StartTime = time.time_ns();
         if Response == "RDYRECV":
