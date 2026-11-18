@@ -10,7 +10,7 @@ HostName = socket.gethostname();
 IP = socket.gethostbyname(HostName)
 print(HostName, IP);
 
-# Code to make a section for QT that's a horizontal box. 
+# Code to make a section for QT that's a horizontal box.
 def MakeSection(*Args):
     Section = QtWidgets.QWidget();
     Section.Layout = QtWidgets.QHBoxLayout(Section);
