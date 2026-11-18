@@ -3,6 +3,7 @@ from PySide6 import QtCore, QtWidgets, QtGui
 import socket
 import os
 import hashlib
+import time
 
 HostName = socket.gethostname();
 IP = socket.gethostbyname(HostName)
@@ -14,6 +15,13 @@ def MakeSection(*Args):
     for Arg in Args:
         Out.Layout.addWidget(Arg);
     return Out;
+
+def GetRateMBps(Bytes, TimeNS):
+    MegaBytes = Bytes/1000000;
+    Seconds = TimeNS/1000000000;
+    if Seconds == 0:
+        return "Too fast to measure lowkey.";
+    return MegaBytes/Seconds;
 
 class MainWidget(QtWidgets.QWidget):
     def __init__(Self):
@@ -142,6 +150,7 @@ class MainWidget(QtWidgets.QWidget):
         if not Self.File:
             raise(Exception("No file selected."));
         Self.Connect();
+        SizeBytes = os.path.getsize(Self.File);
 
         FileName = Self.ServerFileName.text();
         
@@ -196,6 +205,7 @@ class MainWidget(QtWidgets.QWidget):
                 Self.Socket.close();
                 return;
         #print(Response);
+        StartTime = time.time_ns();
         if Response == "RDYRECV":
             print("Sending.");
             with open(Self.File, "rb") as File:
@@ -204,6 +214,8 @@ class MainWidget(QtWidgets.QWidget):
                     Self.Socket.send(FileText)
                     FileText = File.read(1024);
         print("File sent.");
+        EndTime = time.time_ns();
+        print("MB/s :", GetRateMBps(SizeBytes, EndTime-StartTime));
         Self.Socket.close();
         return;
     
@@ -312,9 +324,12 @@ class MainWidget(QtWidgets.QWidget):
         if not os.path.exists(TempLoc):
             with open(TempLoc, "x") as File:
                 print("Temp file created.");
+        
+        StartTime = time.time_ns();
+        
         Response = Self.Socket.recv(1024);
         Pos += len(Response);
-
+        
         Type = "wb"
         if TempFile:
             Type = "ab"
@@ -325,6 +340,8 @@ class MainWidget(QtWidgets.QWidget):
                 #print(len(Response));
                 Pos += len(Response);
         Self.Socket.close()
+        EndTime = time.time_ns();
+        print("MB/s :", GetRateMBps(Pos, EndTime - StartTime));
         if EndSize > Pos:
             Self.Popup("File NOT successfully downloaded.");
         else:
