@@ -36,6 +36,7 @@ class MainWidget(QtWidgets.QWidget):
         Self.IP = QtWidgets.QLineEdit();
         
         Self.Socket = None;
+        Self.ModSocket = None
         
         # Create a bunch of buttons and text lines and stuff and such and things.
         Self.QuitButton = QtWidgets.QPushButton("Quit.");
@@ -116,7 +117,15 @@ class MainWidget(QtWidgets.QWidget):
         Msg = Self.GetMessage();
         if Msg == "AUTHFAIL":
             raise(Exception("Authentication Failed."));
-    
+
+    def connectModule(Self):
+        IP = Self.IP.text()
+        Port = int(Self.Port.text())+1
+        Self.ModSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        Self.ModSocket.settimeout(5)
+        Self.ModSocket.connect((IP, Port))
+
+
     # Send function that's pretty much a wrapper.
     def Send(Self):
         #IP = Self.IP.text();
@@ -252,8 +261,15 @@ class MainWidget(QtWidgets.QWidget):
         EndTime = time.time_ns();
         # Print speed to console.
         print("MB/s :", GetRateMBps(SizeBytes, EndTime-StartTime));
+
+        # open module socket
+        Self.connectModule()
+        # send speed info to module
+        Self.ModSocket.send((str(GetRateMBps(SizeBytes, EndTime-StartTime))+"@0@"+str((EndTime-StartTime)/1000000000)+"@"+NewFileName).encode())
+
         # Close socket.
         Self.Socket.close();
+        Self.ModSocket.close()
         return;
     
     # This is pretty much just complicated because of the UI, but it checks if the user wants to overwrite the file or not.
