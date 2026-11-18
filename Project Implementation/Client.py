@@ -167,12 +167,12 @@ class MainWidget(QtWidgets.QWidget):
                         break;
             FullPath = (FullPath + Path + "/").strip();
             if not DirExists:
-                    Self.Socket.send(f"MKDIR@{FullPath}".encode());
+                    Self.Socket.send(f"{hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest()}@MKDIR@{FullPath}".encode());
                     Response = Self.GetMessage();
                     #print(Response);
                     if Response == "FAIL":
                         raise(Exception("Failed to create directory."));
-            Self.Socket.send(f"DIRECTORY@{FullPath}".encode());
+            Self.Socket.send(f"{hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest()}@DIRECTORY@{FullPath}".encode());
             Dirs = Self.GetMessage();
             #print(Dirs);
             Read = Self.ReadDir(Dirs);
@@ -252,7 +252,7 @@ class MainWidget(QtWidgets.QWidget):
         Self.Socket.send(f"DELETE@./Files/{FileToKill}".encode());
         Response = Self.GetMessage();
         Self.Popup(Response);
-        Self.Socket.Close();
+        Self.Socket.close();
 
     def Download(Self):
         try:
