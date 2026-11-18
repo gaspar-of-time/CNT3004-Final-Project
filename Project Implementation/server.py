@@ -33,9 +33,9 @@ def getFile(socket, path):
 def handle_client(conn, addr):
 
     print(f"[NEW CONNECTION] {addr} connected.")
-    
-    data = conn.recv(SIZE).decode(FORMAT);
-    data = data.split("@");
+
+    data = conn.recv(SIZE).decode(FORMAT)
+    data = data.split("@")
     if (data[0] not in sha256keys):
         send_data = "AUTHFAIL@"
         conn.send(send_data.encode(FORMAT))
@@ -48,7 +48,7 @@ def handle_client(conn, addr):
             print(data)
             cmd = data[0]
             if cmd == "":
-                break;
+                break
             else:
                 path = data[1]
             match cmd:
@@ -105,10 +105,10 @@ def handle_client(conn, addr):
 
                     # data = conn.recv(SIZE).decode(FORMAT)
                     # data = data.split("@")
-                    FileSize = os.path.getsize(path);
+                    FileSize = os.path.getsize(path)
                     Response = f"SIZE@{FileSize}"
-                    conn.send(Response.encode(FORMAT));
-                    StartPos = int(data[2]);
+                    conn.send(Response.encode(FORMAT))
+                    StartPos = int(data[2])
                     with open(path, "rb") as File:
                         File.seek(StartPos)
                         Text = File.read(1024)
