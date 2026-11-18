@@ -364,12 +364,15 @@ class MainWidget(QtWidgets.QWidget):
     def Quit(Self):
         sys.exit();
 
+Args = sys.argv[1:];
+	
 if __name__ == "__main__":
     App = QtWidgets.QApplication([]);
     Widget = MainWidget();
     Widget.resize(200, 200);
     Widget.show();
-    with open("Style.qss", "r") as F:
-        Style = F.read();
-        Widget.setStyleSheet(Style);
+	if ("--SystemDefaultTheming") not in Args:
+		with open("Style.qss", "r") as F:
+		    Style = F.read();
+		    Widget.setStyleSheet(Style);
     App.exec();
