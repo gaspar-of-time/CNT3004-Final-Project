@@ -105,7 +105,12 @@ def handle_client(conn, addr):
 
                     # data = conn.recv(SIZE).decode(FORMAT)
                     # data = data.split("@")
+                    FileSize = os.path.getsize(path);
+                    Response = f"SIZE@{FileSize}"
+                    conn.send(Response.encode(FORMAT));
+                    StartPos = int(data[2]);
                     with open(path, "rb") as File:
+                        File.seek(StartPos)
                         Text = File.read(1024)
                         while Text != b"":
                             conn.send(Text)
