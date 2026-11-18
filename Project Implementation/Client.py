@@ -92,7 +92,7 @@ class MainWidget(QtWidgets.QWidget):
         Self.Socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
         Self.Socket.settimeout(5);
         Self.Socket.connect((IP, int(Port)));
-        Self.Socket.send(hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest().encode());
+        Self.Socket.send(hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest().encode()+"@".encode());
 
     def Send(Self):
         #IP = Self.IP.text();
