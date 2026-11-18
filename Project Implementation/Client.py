@@ -274,16 +274,20 @@ class MainWidget(QtWidgets.QWidget):
         FileDialogDownload.show();
         Loop.exec();
         
+        DownloadPath = Self.DownloadFileLocation;
+        Path = DownloadPath.split("/");
+
         FileDownload = Self.ServerFileName.text();
         if Self.ServerFileName.text() == "":
             raise(Exception("No download file set."));
-        Self.Socket.send(f"DOWNLOAD@./Files/{FileDownload}".encode());
-        Response = Self.Socket.recv(1024);
+        
+        Temp = "./.TEMP/"
+        if not os.path.exists(Temp):
+            os.mkdir(Temp);
+
         Loc = "./Files/";
         if not os.path.exists(Loc):
             os.mkdir(Loc);
-        DownloadPath = Self.DownloadFileLocation;
-        Path = DownloadPath.split("/");
         try:
             Start = Path.index("Files");
         except:
@@ -293,13 +297,39 @@ class MainWidget(QtWidgets.QWidget):
             Loc += CurPath + "/";
             if not os.path.exists(Loc):
                 os.mkdir(Loc);
-        Loc += Path[-1]; 
-        with open(Loc, "wb") as File:
+        Loc += Path[-1];
+        TempLoc = Temp + Path[-1];
+        
+        Pos = 0;
+        TempFile = False;
+        if os.path.exists(Loc) and os.path.exists(TempLoc):
+            Pos = os.path.getsize(Loc);
+            TempFile = True;
+        Self.Socket.send(f"DOWNLOAD@./Files/{FileDownload}@{Pos}".encode());
+        
+        EndSize = int(Self.GetMessage(1));
+        
+        if not os.path.exists(TempLoc):
+            with open(TempLoc, "x") as File:
+                print("Temp file created.");
+        Response = Self.Socket.recv(1024);
+        Pos += 1024;
+
+        Type = "wb"
+        if TempFile:
+            Type = "ab"
+        with open(Loc, Type) as File:
             while Response != b"":
                 File.write(Response);
                 Response = Self.Socket.recv(1024);
+                Pos += 1024;
         Self.Socket.close()
-    
+        if EndSize > Pos:
+            Self.Popup("File NOT successfully downloaded.");
+        else:
+            Self.Popup("File downloaded successfully.");
+            os.remove(TempLoc);
+
     def SetDownloadFileLocation(Self, File):
         Self.DownloadFileLocation = File;
 
@@ -381,8 +411,9 @@ if __name__ == "__main__":
     Widget = MainWidget();
     Widget.resize(200, 200);
     Widget.show();
-    if ("--SystemDefaultTheming" not in Args) and (os.path.exists("./Style.qss")):
-        with open("Style.qss", "r") as F:
-            Style = F.read();
-            App.setStyleSheet(Style);
+    if "--SystemDefaultTheming" not in Args:
+        if os.path.exists("Style.qss"):
+            with open("Style.qss", "r") as F:
+                Style = F.read();
+                App.setStyleSheet(Style);
     App.exec();
