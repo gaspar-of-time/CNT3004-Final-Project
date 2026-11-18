@@ -55,7 +55,7 @@ def handle_client(conn, addr):
                 case "UPLOAD":
                     # expected msg from client is UPLOAD@ [server filepath]
 
-                    if (os.path.exists(path)):
+                    if (os.path.isfile(path)):
                         # if the file exists send that it exists
                         print("File exists")
                         send_data = "EXISTS@"
@@ -77,6 +77,10 @@ def handle_client(conn, addr):
                         elif (data[0] == "NO"):
                             send_data = "DONE@"
                             conn.send(send_data.encode(FORMAT))
+                    elif (os.path.isdir(path)):
+                        print("Directory exists at path")
+                        send_data = "FAIL@"
+                        conn.send(send_data.encode(FORMAT))
                     else:
                         print("rsy")
                         send_data = "RDYRECV@"
