@@ -109,6 +109,10 @@ def handle_client(conn, addr):
 
                     # data = conn.recv(SIZE).decode(FORMAT)
                     # data = data.split("@")
+                    if not os.path.exists(path):
+                        Response = "DNE@"
+                        conn.send(Response.encode(FORMAT));
+                        break;
                     FileSize = os.path.getsize(path)
                     Response = f"SIZE@{FileSize}"
                     conn.send(Response.encode(FORMAT))
