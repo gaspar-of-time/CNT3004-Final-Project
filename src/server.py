@@ -23,10 +23,12 @@ def getFile(socket, path):
     test = True
 
     # append data to file until done
+    print("Writing File")
     while (test != b''):
         test = socket.recv(SIZE)
-        print(f"{test}")
         f.write(test)
+    f.close()
+    print("Done Writing File")
 
 
 # to handle the clients
@@ -111,8 +113,8 @@ def handle_client(conn, addr):
                     # data = data.split("@")
                     if not os.path.exists(path):
                         Response = "DNE@"
-                        conn.send(Response.encode(FORMAT));
-                        break;
+                        conn.send(Response.encode(FORMAT))
+                        break
                     FileSize = os.path.getsize(path)
                     Response = f"SIZE@{FileSize}"
                     conn.send(Response.encode(FORMAT))
