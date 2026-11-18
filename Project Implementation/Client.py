@@ -1,8 +1,8 @@
 import sys
 from PySide6 import QtCore, QtWidgets, QtGui
-import socket
 import os
 import hashlib
+import socket
 
 HostName = socket.gethostname();
 IP = socket.gethostbyname(HostName)
@@ -179,7 +179,7 @@ class MainWidget(QtWidgets.QWidget):
             #print(Read);
             #print(FullPath);
         print(FullPath + NewFileName);
-        Self.Socket.send(f"UPLOAD@{FullPath + NewFileName}".encode());
+        Self.Socket.send(f"{hashlib.sha256(Self.PasswordInput.text().encode()).hexdigest()}@UPLOAD@{FullPath + NewFileName}".encode());
         Response = Self.GetMessage();
         #print(Response);
         if Response == "EXISTS":

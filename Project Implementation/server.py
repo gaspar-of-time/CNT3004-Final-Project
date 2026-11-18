@@ -38,20 +38,29 @@ def handle_client(conn, addr):
         data = conn.recv(SIZE).decode(FORMAT)
         data = data.split("@")
         print(data)
-        if (data[0] not in sha256keys):
+        if (data[0] == ""):
+            break
+        elif (data[0] not in sha256keys):
             send_data = "AUTHFAIL@"
             conn.send(send_data.encode(FORMAT))
             break
         cmd = data[1]
         if cmd == "":
-            break
-        path = data[2]
+            while (cmd == ""):
+                data = conn.recv(SIZE).decode(FORMAT)
+                data = data.split("@")
+                print(data)
+                cmd = data[0]
+                path = data[1]
+        else:
+            path = data[2]
         match cmd:
             case "UPLOAD":
                 # expected msg from client is UPLOAD@ [server filepath]
 
                 if (os.path.exists(path)):
                     # if the file exists send that it exists
+                    print("File exists")
                     send_data = "EXISTS@"
                     conn.send(send_data.encode(FORMAT))
 
@@ -72,6 +81,7 @@ def handle_client(conn, addr):
                         send_data = "DONE@"
                         conn.send(send_data.encode(FORMAT))
                 else:
+                    print("rsy")
                     send_data = "RDYRECV@"
                     conn.send(send_data.encode(FORMAT))
                     getFile(conn, path)
@@ -138,6 +148,12 @@ def handle_client(conn, addr):
 
 def main():
     print("Starting the server")
+    if (not os.path.isdir("./Files")):
+        try:
+            os.mkdir("./Files")
+        except:
+            print("Unable to create files directory.\nTerminating server.")
+            quit()
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM)  # used IPV4 and TCP connection
     server.bind(ADDR)  # bind the address
