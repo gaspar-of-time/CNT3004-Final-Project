@@ -339,6 +339,10 @@ class MainWidget(QtWidgets.QWidget):
         
         Self.Connect();
         
+        Loc = "./Files/";
+        if not os.path.exists(Loc):
+            os.mkdir(Loc);
+
         # Open a prompt for the user to select the file location to download to.
         FileDialogDownload = QtWidgets.QFileDialog();
         Loop = QtCore.QEventLoop();
@@ -359,9 +363,6 @@ class MainWidget(QtWidgets.QWidget):
         if not os.path.exists(Temp):
             os.mkdir(Temp);
 
-        Loc = "./Files/";
-        if not os.path.exists(Loc):
-            os.mkdir(Loc);
         try:
             Start = Path.index("Files");
         except:
@@ -389,6 +390,8 @@ class MainWidget(QtWidgets.QWidget):
         Responses = Self.GetMessage([0, 1]);
         if Responses[0] == "DNE":
             raise(Exception("Server file does not exist."));
+        
+        Self.Socket.send("READY@".encode());
 
         # Get the size of the file.
         EndSize = int(Responses[1]);
