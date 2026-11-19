@@ -21,25 +21,27 @@ def handle_client(conn, addr, starttime):
         data = data.split("@")
         if (data[0] == ""):
             break
-        with open("./Logs/"+starttime, 'a') as log:
-            log.write("Current Time:"+str(datetime.datetime.now())+", IP Address:"+str(addr)+", Transfer Speed (MB/s):"+data[0]+", Time spent on file (s):"+data[1]+", File Name:"+data[2]+"\n")
+        with open("./Logs/"+starttime+".csv", 'a') as log:
+            log.write(data[0]+",\""+str(datetime.datetime.now())+"\",\""+str(addr)+"\","+data[1]+","+data[2]+",\""+data[3]+"\"\n")
             log.close()
 
 
 def main():
-    print("Starting the server")
+    print("Starting the Analysis Module")
     if (not os.path.isdir("./Logs")):
         try:
             os.mkdir("./Logs")
         except:
-            print("Unable to create logs directory.\nTerminating server.")
+            print("Unable to create logs directory.\nTerminating module.")
             quit()
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM)  # used IPV4 and TCP connection
     server.bind(ADDR)  # bind the address
     server.listen()  # start listening
-    print(f"server is listening on {IP}: {PORT}")
+    print(f"listening on {IP}: {PORT}")
     starttime = str(datetime.datetime.now())
+    with open("./Logs/"+starttime+".csv", 'a') as log:
+        log.write("Type,Time,\"IP Address\",Transfer Speed (MB/s),Time spent on file (s), Filename \n")
     while True:
         conn, addr = server.accept()  # accept a connection from a client
         thread = threading.Thread(

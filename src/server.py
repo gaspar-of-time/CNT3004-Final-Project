@@ -3,6 +3,7 @@ import os
 import socket
 import threading
 import shutil
+import time
 
 IP = "0.0.0.0"
 PORT = 4450
@@ -119,12 +120,22 @@ def handle_client(conn, addr):
                     Response = f"SIZE@{FileSize}"
                     conn.send(Response.encode(FORMAT))
                     StartPos = int(data[2])
+                    # StartTime for upload speed.
+                    StartTime = time.time_ns()
                     with open(path, "rb") as File:
                         File.seek(StartPos)
                         Text = File.read(1024)
                         while Text != b"":
                             conn.send(Text)
                             Text = File.read(1024)
+                    EndTime = time.time_ns()
+                    module = socket.socket(socket.AF_INET,
+                                           socket.SOCK_STREAM)
+                    module.connect(("localhost", PORT+1))
+                    MBps = (FileSize/1000000)/((EndTime-StartTime)/1000000000)
+                    filename = path.split("/")[-1]
+                    module.send(("DOWNLOAD@"+str(MBps)+"@"+str((EndTime-StartTime)/1000000000)+"@"+filename).encode(FORMAT))
+                    module.close()
                     break
                     # send_data = "DONE@"
                     # conn.send(send_data.encode(FORMAT))
