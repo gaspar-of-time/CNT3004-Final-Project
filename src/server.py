@@ -119,6 +119,7 @@ def handle_client(conn, addr):
                     FileSize = os.path.getsize(path)
                     Response = f"SIZE@{FileSize}"
                     conn.send(Response.encode(FORMAT))
+                    conn.recv(SIZE).decode(FORMAT)
                     StartPos = int(data[2])
                     # StartTime for upload speed.
                     StartTime = time.time_ns()
@@ -167,6 +168,7 @@ def handle_client(conn, addr):
 
     print(f"{addr} disconnected")
     conn.close()
+
 
 
 def main():

@@ -3,7 +3,6 @@ import os
 import socket
 import threading
 import datetime
-import time
 
 IP = "0.0.0.0"
 PORT = 4451
