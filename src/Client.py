@@ -329,10 +329,10 @@ class MainWidget(QtWidgets.QWidget):
 
     # The download wrapper.
     def Download(Self):
-        try:
+        #try:
             Self.DoDownload();
-        except Exception as E:
-            Self.OopsError(E);
+        #except Exception as E:
+        #    Self.OopsError(E);
    
     # Download.
     def DoDownload(Self):
